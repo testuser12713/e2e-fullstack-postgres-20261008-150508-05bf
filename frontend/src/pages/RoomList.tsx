@@ -52,6 +52,37 @@ function ErrorState({ code, message, onRetry }: ErrorStateProps) {
   )
 }
 
+function NoRoomsState() {
+  return (
+    <div className="empty-state">
+      <svg
+        className="empty-state__icon"
+        width="40"
+        height="40"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 21h18" />
+        <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
+        <path d="M9 8h1" />
+        <path d="M14 8h1" />
+        <path d="M9 12h1" />
+        <path d="M14 12h1" />
+        <path d="M10 21v-4h4v4" />
+      </svg>
+      <p className="empty-state__title">Es sind noch keine Räume angelegt.</p>
+      <p className="empty-state__body">
+        Sobald Räume angelegt wurden, erscheinen sie hier mit ihrer Ausstattung.
+      </p>
+    </div>
+  )
+}
+
 interface EmptyStateProps {
   onReset: () => void
 }
@@ -162,18 +193,18 @@ export default function RoomList() {
 
       {status === 'ready' && (
         <>
-          {availableAmenities.length > 0 && (
-            <section className="room-list-filter" aria-label="Ausstattungsfilter">
-              <AmenityFilter
-                amenities={availableAmenities}
-                selected={selected}
-                onToggle={toggleAmenity}
-              />
-            </section>
-          )}
+          <section className="room-list-filter" aria-label="Ausstattungsfilter">
+            <AmenityFilter
+              amenities={availableAmenities}
+              selected={selected}
+              onToggle={toggleAmenity}
+            />
+          </section>
 
-          <section aria-live="polite">
-            {visibleRooms.length === 0 ? (
+          <section className="room-list-grid-section" aria-live="polite">
+            {rooms.length === 0 ? (
+              <NoRoomsState />
+            ) : selected.length > 0 && visibleRooms.length === 0 ? (
               <EmptyState onReset={resetFilter} />
             ) : (
               <div className="room-grid">
