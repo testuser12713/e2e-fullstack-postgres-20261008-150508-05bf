@@ -358,7 +358,7 @@
 }
 
 /* ==========================================================================
-   ErrorState
+   NoticeBanner (inline success/conflict notices)
    ========================================================================== */
 
 .banner {
@@ -414,5 +414,53 @@
 }
 
 .banner .btn {
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   ErrorState (data fetch failure)
+   Centered, narrow block per DESIGN.md ErrorState: warning-soft styling in the
+   EmptyState geometry (max-width 420px, padding 48px 24px) so the two states
+   are never confused. The code line is uppercased and stays a secondary,
+   monospaced line — never the headline.
+   ========================================================================== */
+
+.day-error-state {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  background: var(--color-warning_soft);
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-md);
+}
+
+.day-error-state__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.day-error-state__body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-fg_muted);
+}
+
+.day-error-state__code {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-fg_muted);
+}
+
+.day-error-state__actions {
   margin-top: 8px;
 }

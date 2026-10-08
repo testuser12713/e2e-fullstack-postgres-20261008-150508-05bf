@@ -163,7 +163,20 @@ describe('RoomDay', () => {
     renderDay()
 
     expect(await screen.findByText('Daten konnten nicht geladen werden.')).toBeInTheDocument()
-    expect(screen.getByText('network_error')).toBeInTheDocument()
+    expect(screen.getByText('NETWORK_ERROR')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Erneut versuchen' })).toBeInTheDocument()
+  })
+
+  it('renders an unknown room as an uppercased NOT_FOUND error state', async () => {
+    getRoom.mockRejectedValue(new client.ApiError('not_found', 'Der Raum existiert nicht.'))
+    listBookings.mockResolvedValue([])
+
+    renderDay()
+
+    expect(await screen.findByText('Daten konnten nicht geladen werden.')).toBeInTheDocument()
+    const error = screen.getByTestId('day-error')
+    expect(error).toHaveTextContent('NOT_FOUND')
+    expect(error).toHaveTextContent('Der Raum existiert nicht.')
     expect(screen.getByRole('button', { name: 'Erneut versuchen' })).toBeInTheDocument()
   })
 
