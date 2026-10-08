@@ -27,6 +27,19 @@
   color: var(--color-fg_muted);
 }
 
+/* Filter toolbar (region filter-bar of the mockup). It always sits above the
+   grid; the .room-list flex gap (--space-5, 32px on the spacing scale) provides
+   the 32px to the header above and to the grid below. */
+.room-list-filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.room-list-grid-section {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Filter chips (TagChip, interactive role) and read-only equipment tags. */
 
 .chips {

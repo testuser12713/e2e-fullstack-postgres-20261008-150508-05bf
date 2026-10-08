@@ -136,4 +136,67 @@ describe('RoomList', () => {
 
     expect(await screen.findByText('Konferenzraum Alster')).toBeInTheDocument()
   })
+
+  it('always renders the amenity filter bar, even when no rooms are loaded', async () => {
+    mockedListRooms.mockResolvedValue([])
+    renderRoomList()
+
+    expect(await screen.findByRole('group', { name: 'Ausstattungsfilter' })).toBeInTheDocument()
+
+    for (const amenity of [
+      'Beamer',
+      'Whiteboard',
+      'Videokonferenz',
+      'TV',
+      'Monitor',
+      'Telefonkonferenz',
+      'Sofa',
+      'Kaffeemaschine',
+    ]) {
+      expect(screen.getByRole('button', { name: amenity })).toBeInTheDocument()
+    }
+  })
+
+  it('appends an amenity found in the loaded rooms to the fixed chips', async () => {
+    mockedListRooms.mockResolvedValue([
+      ...rooms,
+      { id: 5, name: 'Werkstatt', seats: 4, amenities: ['Werkbank'] },
+    ])
+    renderRoomList()
+
+    await screen.findByText('Werkstatt')
+    expect(screen.getByRole('button', { name: 'Werkbank' })).toBeInTheDocument()
+  })
+
+  it('renders the full grid while no chip is selected', async () => {
+    renderRoomList()
+
+    await screen.findByText('Konferenzraum Alster')
+
+    const grid = document.querySelector('.room-grid')
+    expect(grid).not.toBeNull()
+    expect(grid?.querySelectorAll('.room-card')).toHaveLength(rooms.length)
+    expect(screen.queryByText('Kein Raum passt zu dieser Ausstattung.')).not.toBeInTheDocument()
+  })
+
+  it('shows the filter-empty state only after a chip is selected', async () => {
+    const user = userEvent.setup()
+    renderRoomList()
+
+    await screen.findByText('Konferenzraum Alster')
+    expect(screen.queryByText('Kein Raum passt zu dieser Ausstattung.')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Sofa' }))
+
+    expect(screen.getByText('Kein Raum passt zu dieser Ausstattung.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Filter zurücksetzen' })).toBeInTheDocument()
+  })
+
+  it('shows an explanatory state when the API returns no rooms at all', async () => {
+    mockedListRooms.mockResolvedValue([])
+    renderRoomList()
+
+    expect(await screen.findByText('Es sind noch keine Räume angelegt.')).toBeInTheDocument()
+    expect(screen.queryByText('Kein Raum passt zu dieser Ausstattung.')).not.toBeInTheDocument()
+  })
 })
