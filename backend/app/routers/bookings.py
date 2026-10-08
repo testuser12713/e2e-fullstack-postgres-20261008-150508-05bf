@@ -1,8 +1,9 @@
-"""Booking routes: create, list and fetch.
+"""Booking routes: create, list, fetch, update and delete.
 
-Creation enforces the shared booking rules (window, maximum duration and
-overlap) through :mod:`app.services.booking_rules`. Update and delete belong to
-their own slice and still answer 501 in the unified error body.
+Creation and update enforce the same shared booking rules (window, maximum
+duration and overlap) through :mod:`app.services.booking_rules`, so an update
+never conflicts with itself. A booking whose start has been reached is locked:
+both update and delete refuse it with ``booking_already_started``.
 """
 
 from __future__ import annotations
@@ -18,7 +19,11 @@ from app.db import get_session
 from app.errors import AppError
 from app.models import Booking, Room
 from app.schemas import BookingCreate, BookingOut
-from app.services.booking_rules import find_booking_overlap, validate_booking_window
+from app.services.booking_rules import (
+    ensure_booking_not_started,
+    find_booking_overlap,
+    validate_booking_window,
+)
 from app.timeutils import parse_iso, utc_day_bounds
 
 router = APIRouter(prefix="/api/bookings", tags=["bookings"])
@@ -102,15 +107,49 @@ def get_booking(booking_id: int, session: Session = Depends(get_session)) -> Boo
 def update_booking(
     booking_id: int, payload: BookingCreate, session: Session = Depends(get_session)
 ) -> BookingOut:
-    """Update a booking."""
-    raise AppError(
-        "not_implemented", "Das Ändern einer Buchung wird von einem anderen Ticket implementiert."
-    )
+    """Update a future booking after re-running every creation rule.
+
+    The window and overlap checkers are the same ones creation uses; the overlap
+    search excludes this booking so it never conflicts with itself.
+    """
+    start = _parse_time(payload.start, "start")
+    end = _parse_time(payload.end, "end")
+    validate_booking_window(start, end)
+
+    booking = session.get(Booking, booking_id)
+    if booking is None:
+        raise AppError("not_found", "Die Buchung wurde nicht gefunden.")
+
+    ensure_booking_not_started(booking.start)
+
+    room = session.get(Room, payload.room_id)
+    if room is None:
+        message = "Der angegebene Raum existiert nicht."
+        raise AppError("validation_error", message, fields={"room_id": message})
+
+    overlap = find_booking_overlap(session, payload.room_id, start, end, exclude_id=booking_id)
+    if overlap is not None:
+        message = _overlap_message(overlap)
+        raise AppError("booking_overlap", fields={"start": message})
+
+    booking.room_id = payload.room_id
+    booking.booked_by = payload.booked_by
+    booking.title = payload.title
+    booking.start = start
+    booking.end = end
+    session.commit()
+    session.refresh(booking)
+    return booking
 
 
 @router.delete("/{booking_id}", status_code=204)
 def delete_booking(booking_id: int, session: Session = Depends(get_session)) -> None:
-    """Delete a booking."""
-    raise AppError(
-        "not_implemented", "Das Löschen einer Buchung wird von einem anderen Ticket implementiert."
-    )
+    """Delete a future booking; a booking that already started is refused."""
+    booking = session.get(Booking, booking_id)
+    if booking is None:
+        raise AppError("not_found", "Die Buchung wurde nicht gefunden.")
+
+    ensure_booking_not_started(booking.start)
+
+    session.delete(booking)
+    session.commit()
