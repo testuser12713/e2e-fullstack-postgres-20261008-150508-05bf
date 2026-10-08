@@ -172,13 +172,15 @@ function BookingSkeleton() {
 
 function ErrorState({ error, onRetry }: { error: ApiError; onRetry: () => void }) {
   return (
-    <div className="banner banner-warning" role="alert">
-      <p className="banner-title">Daten konnten nicht geladen werden.</p>
-      <p className="banner-body">{error.message}</p>
-      <p className="banner-code">{error.code}</p>
-      <button type="button" className="btn btn-secondary" onClick={onRetry}>
-        Erneut versuchen
-      </button>
+    <div className="day-error-state" role="alert" data-testid="day-error">
+      <p className="day-error-state__title">Daten konnten nicht geladen werden.</p>
+      <p className="day-error-state__body">{error.message}</p>
+      <p className="day-error-state__code">{error.code.toUpperCase()}</p>
+      <div className="day-error-state__actions">
+        <button type="button" className="btn btn-secondary" onClick={onRetry}>
+          Erneut versuchen
+        </button>
+      </div>
     </div>
   )
 }
