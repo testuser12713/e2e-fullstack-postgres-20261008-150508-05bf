@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buchung anlegen — Raumbuchung</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-shell" data-od-id="app-shell">
+    <div class="app-shell-inner">
+      <a class="brand" href="index.html" data-od-id="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-title">Raumbuchung</span>
+      </a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-link" href="raeume.html" data-od-id="nav-raeume">Räume</a>
+        <a class="nav-link" href="raum-tagesansicht.html" data-od-id="nav-tagesansicht">Tagesansicht</a>
+        <a class="nav-link" href="freie-raeume.html" data-od-id="nav-freie-raeume">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page" data-od-id="booking-form">
+    <div class="back-row">
+      <a class="btn btn-ghost" href="raum-tagesansicht.html" data-od-id="back-to-day">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        Zurück
+      </a>
+    </div>
+
+    <header class="page-header" data-od-id="booking-header">
+      <h1 class="page-title">Buchung anlegen</h1>
+      <p class="page-subtitle">Reserviere einen Raum. Die Dauer darf höchstens 8 Stunden betragen.</p>
+    </header>
+
+    <section aria-label="Buchungsformular" data-od-id="booking-form-card">
+      <div class="room-card is-static" style="margin-bottom: 16px;" data-od-id="booking-room-context">
+        <div class="room-card-head">
+          <span class="room-card-name">Konferenzraum Alster</span>
+          <span class="room-card-seats">8 Plätze</span>
+        </div>
+        <div class="chips">
+          <span class="chip is-readonly">Beamer</span>
+          <span class="chip is-readonly">Whiteboard</span>
+          <span class="chip is-readonly">Videokonferenz</span>
+        </div>
+      </div>
+
+      <div class="banner banner-error" id="conflict-banner" role="alert" tabindex="-1" hidden data-od-id="conflict-banner">
+        <div class="banner-title">Überschneidung mit bestehender Buchung</div>
+        <div class="banner-body" id="conflict-body">Team-Standup — 09:00–10:30, gebucht von Lena Hoffmann</div>
+        <div class="banner-code">BOOKING_CONFLICT</div>
+      </div>
+
+      <div class="banner banner-success" id="success-banner" role="status" tabindex="-1" hidden data-od-id="success-banner">
+        <div class="banner-title">Buchung angelegt</div>
+        <div class="banner-body">Die Buchung wurde gespeichert und erscheint jetzt in der Tagesansicht des Raums.</div>
+      </div>
+
+      <form id="booking-form" novalidate data-od-id="booking-form">
+        <div class="form-grid">
+          <div class="field field-span-2">
+            <label class="field-label" for="room">Raum</label>
+            <select class="input" id="room" name="room" data-od-id="field-room">
+              <option value="Konferenzraum Alster" selected>Konferenzraum Alster</option>
+              <option value="Konferenzraum Elbe">Konferenzraum Elbe</option>
+              <option value="Besprechungsraum Binnen">Besprechungsraum Binnen</option>
+              <option value="Fokusraum Nord">Fokusraum Nord</option>
+              <option value="Kreativ-Lounge">Kreativ-Lounge</option>
+            </select>
+          </div>
+
+          <div class="field field-span-2">
+            <label class="field-label" for="title">Titel</label>
+            <input class="input" type="text" id="title" name="title" maxlength="80" placeholder="z. B. Projektbesprechung" data-od-id="field-title">
+            <div class="char-counter" id="title-counter" hidden></div>
+            <div class="field-error" id="title-error" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span>Bitte gib einen Titel an.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="booked-by">Gebucht von</label>
+            <input class="input" type="text" id="booked-by" name="booked-by" placeholder="Vor- und Nachname" data-od-id="field-booked-by">
+            <div class="field-error" id="booked-by-error" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span>Bitte gib an, wer bucht.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="date">Datum</label>
+            <input class="input" type="date" id="date" name="date" value="2025-05-12" data-od-id="field-date">
+            <div class="field-error" id="date-error" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span>Bitte wähle ein Datum.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="start">Beginn</label>
+            <input class="input" type="time" id="start" name="start" value="09:00" data-od-id="field-start">
+            <div class="field-error" id="start-error" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span>Bitte gib eine Beginnzeit an.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="end">Ende</label>
+            <input class="input" type="time" id="end" name="end" value="10:30" data-od-id="field-end">
+            <div class="field-error" id="end-error" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span id="end-error-text">Das Ende muss nach dem Beginn liegen.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" data-od-id="submit-booking">Buchung anlegen</button>
+          <a class="btn btn-ghost" href="raum-tagesansicht.html" data-od-id="cancel-booking">Abbrechen</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var form = document.getElementById('booking-form');
+      var end = document.getElementById('end');
+      var start = document.getElementById('start');
+      var title = document.getElementById('title');
+      var bookedBy = document.getElementById('booked-by');
+      var titleCounter = document.getElementById('title-counter');
+
+      var endError = document.getElementById('end-error');
+      var endErrorText = document.getElementById('end-error-text');
+      var titleError = document.getElementById('title-error');
+      var bookedByError = document.getElementById('booked-by-error');
+      var conflictBanner = document.getElementById('conflict-banner');
+      var conflictBody = document.getElementById('conflict-body');
+      var successBanner = document.getElementById('success-banner');
+
+      var touched = { start: false, end: false, title: false, bookedBy: false };
+
+      function toMinutes(value) {
+        var parts = value.split(':');
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+      }
+
+      function setFieldError(fieldEl, errorEl, show) {
+        if (errorEl) errorEl.hidden = !show;
+        fieldEl.setAttribute('aria-invalid', show ? 'true' : 'false');
+        fieldEl.setAttribute('aria-describedby', show ? errorEl.id : '');
+      }
+
+      function validateEnd() {
+        var startVal = start.value;
+        var endVal = end.value;
+        if (!startVal || !endVal) { return true; }
+        var s = toMinutes(startVal);
+        var e = toMinutes(endVal);
+        var duration = e - s;
+        var ok = true;
+        if (e <= s) {
+          endErrorText.textContent = 'Das Ende muss nach dem Beginn liegen.';
+          ok = false;
+        } else if (duration > 480) {
+          endErrorText.textContent = 'Die Dauer darf höchstens 8 Stunden betragen.';
+          ok = false;
+        }
+        if (touched.end || touched.start) {
+          setFieldError(end, endError, !ok);
+        }
+        return ok;
+      }
+
+      function updateTitleCounter() {
+        var len = title.value.length;
+        var max = 80;
+        if (len >= max * 0.8) {
+          titleCounter.hidden = false;
+          titleCounter.textContent = len + '/' + max;
+        } else {
+          titleCounter.hidden = true;
+        }
+      }
+
+      function clearErrors() {
+        setFieldError(end, endError, false);
+        setFieldError(title, titleError, false);
+        setFieldError(bookedBy, bookedByError, false);
+        conflictBanner.hidden = true;
+        successBanner.hidden = true;
+      }
+
+      function validateAll() {
+        var endOk = validateEnd();
+        var titleOk = title.value.trim().length > 0;
+        var byOk = bookedBy.value.trim().length > 0;
+        setFieldError(title, titleError, !titleOk);
+        setFieldError(bookedBy, bookedByError, !byOk);
+        return endOk && titleOk && byOk;
+      }
+
+      start.addEventListener('blur', function () { touched.start = true; validateEnd(); });
+      end.addEventListener('blur', function () { touched.end = true; validateEnd(); });
+      title.addEventListener('input', updateTitleCounter);
+      title.addEventListener('blur', function () {
+        touched.title = true;
+        setFieldError(title, titleError, title.value.trim().length === 0);
+      });
+      bookedBy.addEventListener('blur', function () {
+        touched.bookedBy = true;
+        setFieldError(bookedBy, bookedByError, bookedBy.value.trim().length === 0);
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        touched.start = touched.end = touched.title = touched.bookedBy = true;
+        clearErrors();
+        if (!validateAll()) {
+          return;
+        }
+
+        // Simulated overlap check against the existing 09:00–10:30 booking.
+        var s = toMinutes(start.value);
+        var e = toMinutes(end.value);
+        var overlaps = s < 630 && e > 540; // 09:00 (540) to 10:30 (630)
+        if (overlaps) {
+          conflictBanner.hidden = false;
+          conflictBody.textContent =
+            'Team-Standup — 09:00–10:30, gebucht von Lena Hoffmann';
+          conflictBanner.focus();
+          return;
+        }
+
+        successBanner.hidden = false;
+        successBanner.focus();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Räume — Raumbuchung</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-shell" data-od-id="app-shell">
+    <div class="app-shell-inner">
+      <a class="brand" href="index.html" data-od-id="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-title">Raumbuchung</span>
+      </a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-link is-active" href="raeume.html" data-od-id="nav-raeume">Räume</a>
+        <a class="nav-link" href="raum-tagesansicht.html" data-od-id="nav-tagesansicht">Tagesansicht</a>
+        <a class="nav-link" href="freie-raeume.html" data-od-id="nav-freie-raeume">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page" data-od-id="room-list">
+    <header class="page-header" data-od-id="room-list-header">
+      <h1 class="page-title">Räume</h1>
+      <p class="page-subtitle">Alle buchbaren Räume des Büros. Tippe auf eine Karte, um die Tagesansicht zu öffnen.</p>
+    </header>
+
+    <section class="toolbar" aria-label="Ausstattungsfilter" data-od-id="filter-bar">
+      <div class="chips" id="filter-chips" data-od-id="filter-chips">
+        <button type="button" class="chip" data-filter="Beamer" aria-pressed="false" data-od-id="filter-beamer">
+          <span class="chip-check" aria-hidden="true">✓</span> Beamer
+        </button>
+        <button type="button" class="chip" data-filter="Whiteboard" aria-pressed="false" data-od-id="filter-whiteboard">
+          <span class="chip-check" aria-hidden="true">✓</span> Whiteboard
+        </button>
+        <button type="button" class="chip" data-filter="Videokonferenz" aria-pressed="false" data-od-id="filter-videokonferenz">
+          <span class="chip-check" aria-hidden="true">✓</span> Videokonferenz
+        </button>
+        <button type="button" class="chip" data-filter="TV" aria-pressed="false" data-od-id="filter-tv">
+          <span class="chip-check" aria-hidden="true">✓</span> TV
+        </button>
+        <button type="button" class="chip" data-filter="Monitor" aria-pressed="false" data-od-id="filter-monitor">
+          <span class="chip-check" aria-hidden="true">✓</span> Monitor
+        </button>
+        <button type="button" class="chip" data-filter="Telefonkonferenz" aria-pressed="false" data-od-id="filter-telefonkonferenz">
+          <span class="chip-check" aria-hidden="true">✓</span> Telefonkonferenz
+        </button>
+        <button type="button" class="chip" data-filter="Sofa" aria-pressed="false" data-od-id="filter-sofa">
+          <span class="chip-check" aria-hidden="true">✓</span> Sofa
+        </button>
+        <button type="button" class="chip" data-filter="Kaffeemaschine" aria-pressed="false" data-od-id="filter-kaffeemaschine">
+          <span class="chip-check" aria-hidden="true">✓</span> Kaffeemaschine
+        </button>
+      </div>
+    </section>
+
+    <section class="section-gap" aria-live="polite" data-od-id="room-grid-section">
+      <div class="launcher-grid" id="room-grid" data-od-id="room-grid">
+        <a class="room-card" href="raum-tagesansicht.html" data-equipment="Beamer,Whiteboard,Videokonferenz" data-od-id="room-card-alster">
+          <div class="room-card-head">
+            <span class="room-card-name">Konferenzraum Alster</span>
+            <span class="room-card-seats">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 13h20"/></svg>
+              8 Plätze
+            </span>
+          </div>
+          <div class="chips">
+            <span class="chip is-readonly">Beamer</span>
+            <span class="chip is-readonly">Whiteboard</span>
+            <span class="chip is-readonly">Videokonferenz</span>
+          </div>
+        </a>
+
+        <a class="room-card" href="raum-tagesansicht.html" data-equipment="Beamer,Whiteboard,Videokonferenz,TV" data-od-id="room-card-elbe">
+          <div class="room-card-head">
+            <span class="room-card-name">Konferenzraum Elbe</span>
+            <span class="room-card-seats">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 13h20"/></svg>
+              12 Plätze
+            </span>
+          </div>
+          <div class="chips">
+            <span class="chip is-readonly">Beamer</span>
+            <span class="chip is-readonly">Whiteboard</span>
+            <span class="chip is-readonly">Videokonferenz</span>
+            <span class="chip is-readonly">TV</span>
+          </div>
+        </a>
+
+        <a class="room-card" href="raum-tagesansicht.html" data-equipment="Whiteboard,Telefonkonferenz" data-od-id="room-card-binnen">
+          <div class="room-card-head">
+            <span class="room-card-name">Besprechungsraum Binnen</span>
+            <span class="room-card-seats">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 13h20"/></svg>
+              6 Plätze
+            </span>
+          </div>
+          <div class="chips">
+            <span class="chip is-readonly">Whiteboard</span>
+            <span class="chip is-readonly">Telefonkonferenz</span>
+          </div>
+        </a>
+
+        <a class="room-card" href="raum-tagesansicht.html" data-equipment="Monitor" data-od-id="room-card-fokusraum">
+          <div class="room-card-head">
+            <span class="room-card-name">Fokusraum Nord</span>
+            <span class="room-card-seats">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 13h20"/></svg>
+              2 Plätze
+            </span>
+          </div>
+          <div class="chips">
+            <span class="chip is-readonly">Monitor</span>
+          </div>
+        </a>
+
+        <a class="room-card" href="raum-tagesansicht.html" data-equipment="Whiteboard,Sofa,Kaffeemaschine" data-od-id="room-card-lounge">
+          <div class="room-card-head">
+            <span class="room-card-name">Kreativ-Lounge</span>
+            <span class="room-card-seats">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 13h20"/></svg>
+              10 Plätze
+            </span>
+          </div>
+          <div class="chips">
+            <span class="chip is-readonly">Whiteboard</span>
+            <span class="chip is-readonly">Sofa</span>
+            <span class="chip is-readonly">Kaffeemaschine</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="empty-state" id="filter-empty" hidden data-od-id="filter-empty">
+        <svg class="empty-state-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <h2 class="empty-state-title">Kein Raum passt zu dieser Ausstattung.</h2>
+        <p class="empty-state-body">Die gewählten Schlagwörter müssen alle gleichzeitig vorhanden sein. Versuche es mit weniger Filtern.</p>
+        <button type="button" class="btn btn-secondary" id="reset-filter" data-od-id="reset-filter">Filter zurücksetzen</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var chips = document.querySelectorAll('#filter-chips .chip[data-filter]');
+      var cards = document.querySelectorAll('#room-grid .room-card');
+      var empty = document.getElementById('filter-empty');
+
+      var selected = [];
+
+      function applyFilter() {
+        var visible = 0;
+        cards.forEach(function (card) {
+          var equipment = (card.getAttribute('data-equipment') || '').split(',');
+          var match = selected.every(function (f) {
+            return equipment.indexOf(f) !== -1;
+          });
+          card.hidden = !match;
+          if (match) visible++;
+        });
+        empty.hidden = visible !== 0;
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var filter = chip.getAttribute('data-filter');
+          var pressed = chip.getAttribute('aria-pressed') === 'true';
+          chip.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+          if (pressed) {
+            selected = selected.filter(function (f) { return f !== filter; });
+          } else {
+            selected.push(filter);
+          }
+          applyFilter();
+        });
+      });
+
+      document.getElementById('reset-filter').addEventListener('click', function () {
+        selected = [];
+        chips.forEach(function (chip) {
+          chip.setAttribute('aria-pressed', 'false');
+        });
+        applyFilter();
+      });
+    })();
+  </script>
+</body>
+</html>

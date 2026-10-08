@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tagesansicht — Raumbuchung</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-shell" data-od-id="app-shell">
+    <div class="app-shell-inner">
+      <a class="brand" href="index.html" data-od-id="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-title">Raumbuchung</span>
+      </a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-link" href="raeume.html" data-od-id="nav-raeume">Räume</a>
+        <a class="nav-link is-active" href="raum-tagesansicht.html" data-od-id="nav-tagesansicht">Tagesansicht</a>
+        <a class="nav-link" href="freie-raeume.html" data-od-id="nav-freie-raeume">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page" data-od-id="day-view">
+    <div class="back-row">
+      <a class="btn btn-ghost" href="raeume.html" data-od-id="back-to-rooms">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        Zurück
+      </a>
+    </div>
+
+    <header class="page-header" data-od-id="day-view-header">
+      <h1 class="page-title" id="room-title">Konferenzraum Alster</h1>
+      <p class="page-subtitle">
+        <span class="tabular">8 Plätze</span> · Beamer, Whiteboard, Videokonferenz
+      </p>
+    </header>
+
+    <section aria-label="Tag auswählen" data-od-id="day-switcher-section">
+      <div class="day-switcher" data-od-id="day-switcher">
+        <button type="button" class="btn btn-secondary btn-icon" id="prev-day" aria-label="Vorheriger Tag" data-od-id="day-prev">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="day-switcher-date" id="day-label" data-od-id="day-label">Mo, 12.05.2025 <span class="tz">+02:00</span></div>
+        <button type="button" class="btn btn-secondary btn-icon" id="next-day" aria-label="Nächster Tag" data-od-id="day-next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button type="button" class="btn btn-ghost" id="today" data-od-id="day-today">Heute</button>
+        <a class="btn btn-primary" href="buchung.html" data-od-id="day-create-booking">Buchung anlegen</a>
+      </div>
+    </section>
+
+    <section class="section-gap" aria-live="polite" data-od-id="booking-list-section">
+      <div class="booking-list" id="booking-list" data-od-id="booking-list">
+        <article class="booking-row" data-od-id="booking-standup">
+          <div class="booking-main">
+            <div class="booking-time">09:00–10:30</div>
+            <div class="booking-title">Team-Standup</div>
+            <div class="booking-by">gebucht von Lena Hoffmann</div>
+          </div>
+          <div class="booking-meta">
+            <span class="pill pill-muted">Beamer</span>
+          </div>
+          <div class="booking-actions">
+            <button type="button" class="btn btn-secondary btn-icon" aria-label="Buchung bearbeiten" data-od-id="booking-edit-standup">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+            <button type="button" class="btn btn-danger btn-icon" aria-label="Buchung löschen" data-od-id="booking-delete-standup">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <article class="booking-row" data-od-id="booking-kundengespraech">
+          <div class="booking-main">
+            <div class="booking-time">11:00–12:00</div>
+            <div class="booking-title">Kundengespräch</div>
+            <div class="booking-by">gebucht von Markus Weber</div>
+          </div>
+          <div class="booking-meta">
+            <span class="pill pill-muted">Videokonferenz</span>
+          </div>
+          <div class="booking-actions">
+            <button type="button" class="btn btn-secondary btn-icon" aria-label="Buchung bearbeiten" data-od-id="booking-edit-kundengespraech">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+            <button type="button" class="btn btn-danger btn-icon" aria-label="Buchung löschen" data-od-id="booking-delete-kundengespraech">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <article class="booking-row" data-od-id="booking-design-review">
+          <div class="booking-main">
+            <div class="booking-time">13:30–15:00</div>
+            <div class="booking-title">Design-Review</div>
+            <div class="booking-by">gebucht von Julia Schmidt</div>
+          </div>
+          <div class="booking-meta">
+            <span class="pill pill-muted">Beamer</span>
+          </div>
+          <div class="booking-actions">
+            <button type="button" class="btn btn-secondary btn-icon" aria-label="Buchung bearbeiten" data-od-id="booking-edit-design-review">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+            <button type="button" class="btn btn-danger btn-icon" aria-label="Buchung löschen" data-od-id="booking-delete-design-review">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <article class="booking-row" data-od-id="booking-onboarding">
+          <div class="booking-main">
+            <div class="booking-time">16:00–17:00</div>
+            <div class="booking-title">Onboarding 1:1</div>
+            <div class="booking-by">gebucht von Tom Becker</div>
+          </div>
+          <div class="booking-meta">
+            <span class="pill pill-muted">—</span>
+          </div>
+          <div class="booking-actions">
+            <button type="button" class="btn btn-secondary btn-icon" aria-label="Buchung bearbeiten" data-od-id="booking-edit-onboarding">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            </button>
+            <button type="button" class="btn btn-danger btn-icon" aria-label="Buchung löschen" data-od-id="booking-delete-onboarding">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <div class="empty-state" id="day-empty" hidden data-od-id="day-empty">
+        <svg class="empty-state-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+        <h2 class="empty-state-title">An diesem Tag ist nichts gebucht.</h2>
+        <p class="empty-state-body">Der Raum ist an diesem Tag frei. Lege eine neue Buchung an, um den Raum zu reservieren.</p>
+        <a class="btn btn-secondary" href="buchung.html" data-od-id="day-empty-create">Buchung anlegen</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+      var BASE = new Date(2025, 4, 12); // 12.05.2025 (has bookings)
+      var current = new Date(BASE);
+      var bookingList = document.getElementById('booking-list');
+      var dayEmpty = document.getElementById('day-empty');
+      var dayLabel = document.getElementById('day-label');
+
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function render() {
+        var sameDay = current.getTime() === BASE.getTime();
+        var wd = WEEKDAYS[current.getDay()];
+        var date = wd + ', ' + pad(current.getDate()) + '.' + pad(current.getMonth() + 1) + '.' + current.getFullYear();
+        dayLabel.innerHTML = date + ' <span class="tz">+02:00</span>';
+        bookingList.hidden = !sameDay;
+        dayEmpty.hidden = sameDay;
+      }
+
+      document.getElementById('prev-day').addEventListener('click', function () {
+        current.setDate(current.getDate() - 1);
+        render();
+      });
+      document.getElementById('next-day').addEventListener('click', function () {
+        current.setDate(current.getDate() + 1);
+        render();
+      });
+      document.getElementById('today').addEventListener('click', function () {
+        current = new Date(BASE);
+        render();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

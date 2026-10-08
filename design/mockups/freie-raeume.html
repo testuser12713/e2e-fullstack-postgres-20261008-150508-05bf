@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freie Räume — Raumbuchung</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-shell" data-od-id="app-shell">
+    <div class="app-shell-inner">
+      <a class="brand" href="index.html" data-od-id="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-title">Raumbuchung</span>
+      </a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-link" href="raeume.html" data-od-id="nav-raeume">Räume</a>
+        <a class="nav-link" href="raum-tagesansicht.html" data-od-id="nav-tagesansicht">Tagesansicht</a>
+        <a class="nav-link is-active" href="freie-raeume.html" data-od-id="nav-freie-raeume">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page" data-od-id="availability-search">
+    <header class="page-header" data-od-id="search-header">
+      <h1 class="page-title">Freie Räume</h1>
+      <p class="page-subtitle">Finde Räume, die in einem Zeitraum frei sind und deine Ausstattung bieten.</p>
+    </header>
+
+    <section aria-label="Suchkriterien" data-od-id="search-form-card">
+      <div class="room-card is-static" data-od-id="search-card">
+        <form id="search-form" novalidate>
+          <div class="form-grid search-grid">
+            <div class="field">
+              <label class="field-label" for="from-date">Von (Datum)</label>
+              <input class="input" type="date" id="from-date" value="2025-05-13" data-od-id="search-from-date">
+            </div>
+            <div class="field">
+              <label class="field-label" for="from-time">Von (Zeit)</label>
+              <input class="input" type="time" id="from-time" value="09:00" data-od-id="search-from-time">
+            </div>
+            <div class="field">
+              <label class="field-label" for="to-date">Bis (Datum)</label>
+              <input class="input" type="date" id="to-date" value="2025-05-13" data-od-id="search-to-date">
+            </div>
+            <div class="field">
+              <label class="field-label" for="to-time">Bis (Zeit)</label>
+              <input class="input" type="time" id="to-time" value="10:00" data-od-id="search-to-time">
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="min-seats">Mindestplätze</label>
+              <input class="input" type="number" id="min-seats" min="1" step="1" value="6" data-od-id="search-min-seats">
+            </div>
+
+            <div class="field field-span-2">
+              <span class="field-label" id="equipment-label">Ausstattung</span>
+              <div class="chips" role="group" aria-labelledby="equipment-label" data-od-id="search-equipment">
+                <button type="button" class="chip" data-filter="Beamer" aria-pressed="false" data-od-id="search-chip-beamer">
+                  <span class="chip-check" aria-hidden="true">✓</span> Beamer
+                </button>
+                <button type="button" class="chip" data-filter="Whiteboard" aria-pressed="false" data-od-id="search-chip-whiteboard">
+                  <span class="chip-check" aria-hidden="true">✓</span> Whiteboard
+                </button>
+                <button type="button" class="chip" data-filter="Videokonferenz" aria-pressed="false" data-od-id="search-chip-videokonferenz">
+                  <span class="chip-check" aria-hidden="true">✓</span> Videokonferenz
+                </button>
+                <button type="button" class="chip" data-filter="TV" aria-pressed="false" data-od-id="search-chip-tv">
+                  <span class="chip-check" aria-hidden="true">✓</span> TV
+                </button>
+                <button type="button" class="chip" data-filter="Monitor" aria-pressed="false" data-od-id="search-chip-monitor">
+                  <span class="chip-check" aria-hidden="true">✓</span> Monitor
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <span class="field-label">&nbsp;</span>
+              <button type="submit" class="btn btn-primary" data-od-id="search-submit">Freie Räume suchen</button>
+            </div>
+          </div>
+
+          <div class="banner banner-error" id="search-error" role="alert" tabindex="-1" hidden data-od-id="search-error">
+            <div class="banner-title">Eingaben prüfen</div>
+            <div class="banner-body" id="search-error-body">Das Ende muss nach dem Beginn liegen.</div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section-gap" aria-live="polite" data-od-id="search-results-section">
+      <div id="search-results" data-od-id="search-results"></div>
+
+      <div class="skeleton" id="search-skeleton" hidden data-od-id="search-skeleton">
+        <div class="skeleton-row card"></div>
+        <div class="skeleton-row card"></div>
+        <div class="skeleton-row card"></div>
+      </div>
+
+      <div class="empty-state" id="search-empty" hidden data-od-id="search-empty">
+        <svg class="empty-state-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <h2 class="empty-state-title">Kein freier Raum in diesem Zeitraum.</h2>
+        <p class="empty-state-body">Es gibt keinen Raum, der im gewählten Zeitraum frei ist und alle Kriterien erfüllt. Versuche einen größeren Zeitraum oder weniger Ausstattung.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var ROOMS = [
+        { name: 'Konferenzraum Alster', seats: 8, equipment: ['Beamer', 'Whiteboard', 'Videokonferenz'] },
+        { name: 'Konferenzraum Elbe', seats: 12, equipment: ['Beamer', 'Whiteboard', 'Videokonferenz', 'TV'] },
+        { name: 'Besprechungsraum Binnen', seats: 6, equipment: ['Whiteboard', 'Telefonkonferenz'] },
+        { name: 'Fokusraum Nord', seats: 2, equipment: ['Monitor'] },
+        { name: 'Kreativ-Lounge', seats: 10, equipment: ['Whiteboard', 'Sofa', 'Kaffeemaschine'] }
+      ];
+
+      var form = document.getElementById('search-form');
+      var results = document.getElementById('search-results');
+      var skeleton = document.getElementById('search-skeleton');
+      var empty = document.getElementById('search-empty');
+      var errorBanner = document.getElementById('search-error');
+      var errorBody = document.getElementById('search-error-body');
+
+      var chips = document.querySelectorAll('#search-form .chip[data-filter]');
+      var selected = [];
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var f = chip.getAttribute('data-filter');
+          var pressed = chip.getAttribute('aria-pressed') === 'true';
+          chip.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+          if (pressed) {
+            selected = selected.filter(function (x) { return x !== f; });
+          } else {
+            selected.push(f);
+          }
+        });
+      });
+
+      function toMinutes(v) {
+        var p = v.split(':');
+        return parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
+      }
+
+      function seatIcon() {
+        return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 9v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 13h20"/></svg>';
+      }
+
+      function renderResults(matches) {
+        results.innerHTML = '';
+        if (matches.length === 0) {
+          results.hidden = true;
+          empty.hidden = false;
+          return;
+        }
+        empty.hidden = true;
+        results.hidden = false;
+        var grid = document.createElement('div');
+        grid.className = 'launcher-grid';
+        matches.forEach(function (room, i) {
+          var chipsHtml = room.equipment.map(function (e) {
+            return '<span class="chip is-readonly">' + e + '</span>';
+          }).join('');
+          grid.innerHTML +=
+            '<a class="room-card" href="raum-tagesansicht.html">' +
+              '<div class="room-card-head">' +
+                '<span class="room-card-name">' + room.name + '</span>' +
+                '<span class="room-card-seats">' + seatIcon() + ' ' + room.seats + (room.seats === 1 ? ' Platz' : ' Plätze') + '</span>' +
+              '</div>' +
+              '<div class="chips">' + chipsHtml + '</div>' +
+              '<span class="pill pill-free">frei</span>' +
+            '</a>';
+        });
+        results.appendChild(grid);
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorBanner.hidden = true;
+
+        var fromDate = document.getElementById('from-date').value;
+        var toDate = document.getElementById('to-date').value;
+        var fromTime = document.getElementById('from-time').value;
+        var toTime = document.getElementById('to-time').value;
+        var minSeats = parseInt(document.getElementById('min-seats').value, 10) || 1;
+
+        if (!fromDate || !toDate || !fromTime || !toTime) {
+          errorBanner.hidden = false;
+          errorBody.textContent = 'Bitte gib Zeitraum, Beginn und Ende an.';
+          errorBanner.focus();
+          return;
+        }
+
+        var sameDay = fromDate === toDate;
+        var startMin = toMinutes(fromTime);
+        var endMin = toMinutes(toTime);
+        if (sameDay && endMin <= startMin) {
+          errorBanner.hidden = false;
+          errorBody.textContent = 'Das Ende muss nach dem Beginn liegen.';
+          errorBanner.focus();
+          return;
+        }
+        if (sameDay && (endMin - startMin) > 480) {
+          errorBanner.hidden = false;
+          errorBody.textContent = 'Die Dauer darf höchstens 8 Stunden betragen.';
+          errorBanner.focus();
+          return;
+        }
+
+        var matches = ROOMS.filter(function (room) {
+          if (room.seats < minSeats) return false;
+          return selected.every(function (f) {
+            return room.equipment.indexOf(f) !== -1;
+          });
+        });
+
+        // Show a brief loading skeleton, then results (demonstrates AC loading shape).
+        results.hidden = true;
+        empty.hidden = true;
+        skeleton.hidden = false;
+        skeleton.setAttribute('aria-busy', 'true');
+        setTimeout(function () {
+          skeleton.hidden = true;
+          skeleton.setAttribute('aria-busy', 'false');
+          renderResults(matches);
+        }, 500);
+      });
+
+      // Render default results on load.
+      (function () {
+        results.hidden = true;
+        empty.hidden = true;
+        skeleton.hidden = false;
+        skeleton.setAttribute('aria-busy', 'true');
+        setTimeout(function () {
+          skeleton.hidden = true;
+          skeleton.setAttribute('aria-busy', 'false');
+          renderResults(ROOMS.filter(function (room) { return room.seats >= 6; }));
+        }, 500);
+      })();
+    })();
+  </script>
+</body>
+</html>
