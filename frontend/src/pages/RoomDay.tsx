@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { ApiError, getRoom } from '../api/client'
-import BookingList from '../components/BookingList'
+import { ApiError, deleteBooking, getRoom } from '../api/client'
+import BookingActions from '../components/BookingActions'
+import BookingForm from '../components/BookingForm'
+import { formatTimeRange } from '../components/BookingList'
 import { useRoomDay } from '../hooks/useRoomDay'
-import type { Room } from '../types'
+import type { Booking, Room } from '../types'
 import './RoomDay.css'
 
 const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
@@ -66,6 +68,20 @@ function formatOffset(value: string): string {
 
 function formatSeats(seats: number): string {
   return seats === 1 ? '1 Platz' : `${seats} Plätze`
+}
+
+/** A booking whose start has been reached can no longer be changed (AC-09). */
+function hasStarted(booking: Booking): boolean {
+  const start = new Date(booking.start).getTime()
+  return !Number.isNaN(start) && start <= Date.now()
+}
+
+type FormState = { mode: 'create' } | { mode: 'edit'; booking: Booking }
+
+interface Notice {
+  variant: 'success' | 'error'
+  title: string
+  body: string
 }
 
 function ChevronLeftIcon() {
@@ -144,29 +160,6 @@ function CalendarIcon() {
   )
 }
 
-/**
- * The booking form is delivered by another slice of this sprint, so the create
- * control is rendered visibly unavailable (disabled + 'kommt später' pill)
- * rather than as a dead button (AC-16).
- */
-function CreateBookingControl({ variant }: { variant: 'primary' | 'secondary' }) {
-  const className = variant === 'primary' ? 'btn btn-primary' : 'btn btn-secondary'
-  return (
-    <span className="create-booking">
-      <button
-        type="button"
-        className={className}
-        disabled
-        aria-disabled="true"
-        title="Das Buchungsformular wird von einem anderen Ticket ergänzt."
-      >
-        Buchung anlegen
-      </button>
-      <span className="pill pill-later">kommt später</span>
-    </span>
-  )
-}
-
 function BookingSkeleton() {
   return (
     <div className="skeleton" aria-busy="true" data-testid="day-loading">
@@ -190,6 +183,23 @@ function ErrorState({ error, onRetry }: { error: ApiError; onRetry: () => void }
   )
 }
 
+function NoticeBanner({ notice, onDismiss }: { notice: Notice; onDismiss: () => void }) {
+  return (
+    <div
+      className={`banner banner-${notice.variant}`}
+      role={notice.variant === 'success' ? 'status' : 'alert'}
+      tabIndex={-1}
+      data-testid="day-notice"
+    >
+      <p className="banner-title">{notice.title}</p>
+      <p className="banner-body">{notice.body}</p>
+      <button type="button" className="btn btn-ghost" onClick={onDismiss}>
+        Ausblenden
+      </button>
+    </div>
+  )
+}
+
 export default function RoomDay() {
   const { id } = useParams<{ id: string }>()
   const roomId = id === undefined ? undefined : Number(id)
@@ -201,6 +211,9 @@ export default function RoomDay() {
   const [room, setRoom] = useState<Room | null>(null)
   const [roomError, setRoomError] = useState<ApiError | null>(null)
   const [roomReloadToken, setRoomReloadToken] = useState(0)
+  const [formState, setFormState] = useState<FormState | null>(null)
+  const [notice, setNotice] = useState<Notice | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   const { bookings, loading, error, refetch } = useRoomDay(roomId, date)
 
@@ -261,6 +274,91 @@ export default function RoomDay() {
     refetch()
   }, [refetch])
 
+  const openCreate = useCallback(() => {
+    setNotice(null)
+    setFormState({ mode: 'create' })
+  }, [])
+
+  const openEdit = useCallback((booking: Booking) => {
+    setNotice(null)
+    setFormState({ mode: 'edit', booking })
+  }, [])
+
+  const handleSaved = useCallback(
+    (_saved: Booking, mode: 'create' | 'edit') => {
+      setFormState(null)
+      setNotice({
+        variant: 'success',
+        title: mode === 'edit' ? 'Buchung geändert' : 'Buchung angelegt',
+        body:
+          mode === 'edit'
+            ? 'Die Änderungen wurden gespeichert und erscheinen jetzt in der Tagesansicht des Raums.'
+            : 'Die Buchung wurde gespeichert und erscheint jetzt in der Tagesansicht des Raums.',
+      })
+      refetch()
+    },
+    [refetch],
+  )
+
+  const handleDelete = useCallback(
+    async (booking: Booking) => {
+      setDeletingId(booking.id)
+      try {
+        await deleteBooking(booking.id)
+        setNotice({
+          variant: 'success',
+          title: 'Buchung gelöscht',
+          body: 'Die Buchung wurde entfernt und die Tagesansicht aktualisiert.',
+        })
+        refetch()
+      } catch (cause) {
+        setNotice({
+          variant: 'error',
+          title: 'Löschen fehlgeschlagen',
+          body:
+            cause instanceof ApiError
+              ? cause.message
+              : 'Die Buchung konnte nicht gelöscht werden.',
+        })
+      } finally {
+        setDeletingId(null)
+      }
+    },
+    [refetch],
+  )
+
+  if (formState && room) {
+    const editing = formState.mode === 'edit' ? formState.booking : null
+    return (
+      <section className="room-day">
+        <div className="back-row">
+          <button type="button" className="btn btn-ghost" onClick={() => setFormState(null)}>
+            <BackIcon />
+            Zurück
+          </button>
+        </div>
+
+        <header className="page-header">
+          <h1 className="page-title">
+            {formState.mode === 'edit' ? 'Buchung bearbeiten' : 'Buchung anlegen'}
+          </h1>
+          <p className="page-subtitle">
+            Reserviere einen Raum. Die Dauer darf höchstens 8 Stunden betragen.
+          </p>
+        </header>
+
+        <BookingForm
+          room={room}
+          date={date}
+          editing={editing}
+          existingBookings={bookings}
+          onSaved={handleSaved}
+          onCancel={() => setFormState(null)}
+        />
+      </section>
+    )
+  }
+
   const loadedError = roomError ?? error
 
   let content
@@ -276,11 +374,38 @@ export default function RoomDay() {
         <p className="empty-state-body">
           Der Raum ist an diesem Tag frei. Lege eine neue Buchung an, um den Raum zu reservieren.
         </p>
-        <CreateBookingControl variant="secondary" />
+        <button type="button" className="btn btn-secondary" onClick={openCreate} disabled={!room}>
+          Buchung anlegen
+        </button>
       </div>
     )
   } else {
-    content = <BookingList bookings={bookings} />
+    content = (
+      <div className="booking-list">
+        {bookings.map((booking) => {
+          const past = hasStarted(booking)
+          return (
+            <article
+              key={booking.id}
+              className={past ? 'booking-row is-past' : 'booking-row'}
+              data-testid="booking-row"
+            >
+              <div className="booking-main">
+                <div className="booking-time">{formatTimeRange(booking.start, booking.end)}</div>
+                <div className="booking-title">{booking.title}</div>
+                <div className="booking-by">gebucht von {booking.booked_by}</div>
+              </div>
+              <BookingActions
+                booking={booking}
+                disabled={past || deletingId === booking.id}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+              />
+            </article>
+          )
+        })}
+      </div>
+    )
   }
 
   const subtitle = room
@@ -327,9 +452,24 @@ export default function RoomDay() {
           <button type="button" className="btn btn-ghost" onClick={() => goToDate(todayIso())}>
             Heute
           </button>
-          <CreateBookingControl variant="primary" />
+          <span className="create-booking">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={openCreate}
+              disabled={!room}
+            >
+              Buchung anlegen
+            </button>
+          </span>
         </div>
       </section>
+
+      {notice ? (
+        <div className="section-gap">
+          <NoticeBanner notice={notice} onDismiss={() => setNotice(null)} />
+        </div>
+      ) : null}
 
       <section className="section-gap" aria-live="polite">
         {content}

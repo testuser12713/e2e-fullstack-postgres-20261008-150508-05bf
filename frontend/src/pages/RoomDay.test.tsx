@@ -167,7 +167,7 @@ describe('RoomDay', () => {
     expect(screen.getByRole('button', { name: 'Erneut versuchen' })).toBeInTheDocument()
   })
 
-  it('renders the create-booking controls visibly disabled', async () => {
+  it('renders the create-booking controls as working buttons', async () => {
     getRoom.mockResolvedValue(ROOM)
     listBookings.mockResolvedValue([])
 
@@ -177,7 +177,7 @@ describe('RoomDay', () => {
     const createButtons = screen.getAllByRole('button', { name: 'Buchung anlegen' })
     expect(createButtons.length).toBeGreaterThanOrEqual(1)
     for (const button of createButtons) {
-      expect(button).toBeDisabled()
+      expect(button).toBeEnabled()
     }
   })
 })
