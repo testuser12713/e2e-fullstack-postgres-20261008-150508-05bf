@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
+import type { CSSProperties, ChangeEvent, FormEvent } from 'react'
 
 export interface AvailabilitySearchInput {
   start: string
@@ -40,6 +40,61 @@ type ValueKey = keyof FormValues
 
 function pad(value: number): string {
   return String(value).padStart(2, '0')
+}
+
+const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'] as const
+
+/** Split a `YYYY-MM-DD` value into its numeric parts, or null when malformed. */
+function splitIsoDate(value: string): [number, number, number] | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) {
+    return null
+  }
+  return [Number(match[1]), Number(match[2]), Number(match[3])]
+}
+
+/** The product's single DATE format `DD.MM.YYYY` (DESIGN.md layout_principles). */
+function formatDate(value: string): string {
+  const parts = splitIsoDate(value)
+  if (!parts) {
+    return value
+  }
+  const [year, month, day] = parts
+  return `${pad(day)}.${pad(month)}.${year}`
+}
+
+/** The product's date-with-weekday format `Mo, 12.05.2025`. */
+function formatDateWithWeekday(value: string): string {
+  const parts = splitIsoDate(value)
+  if (!parts) {
+    return value
+  }
+  const [year, month, day] = parts
+  const weekday = WEEKDAYS[new Date(year, month - 1, day).getDay()]
+  return `${weekday}, ${pad(day)}.${pad(month)}.${year}`
+}
+
+/** The product's single TIME format 24h `HH:MM`. */
+function formatTimeValue(value: string): string {
+  const match = /^(\d{2}):(\d{2})$/.exec(value)
+  return match ? `${match[1]}:${match[2]}` : value
+}
+
+const FORMAT_HINT_STYLE: CSSProperties = {
+  margin: 0,
+  fontSize: '13px',
+  lineHeight: '20px',
+  color: 'var(--color-fg_muted)',
+  fontVariantNumeric: 'tabular-nums',
+}
+
+const PERIOD_SUMMARY_STYLE: CSSProperties = {
+  margin: 0,
+  fontSize: '14px',
+  lineHeight: '20px',
+  fontWeight: 500,
+  color: 'var(--color-fg)',
+  fontVariantNumeric: 'tabular-nums',
 }
 
 function todayIso(): string {
@@ -183,6 +238,13 @@ export default function AvailabilityForm({ onSearch, busy = false }: Availabilit
                 aria-invalid={startError ? true : undefined}
                 aria-describedby={startError ? `${uid}-start-error` : undefined}
               />
+              <p
+                className="rs-format-value"
+                style={FORMAT_HINT_STYLE}
+                data-testid="from-date-value"
+              >
+                {formatDate(values.fromDate)}
+              </p>
             </div>
 
             <div className="rs-field">
@@ -199,6 +261,13 @@ export default function AvailabilityForm({ onSearch, busy = false }: Availabilit
                 aria-invalid={startError ? true : undefined}
                 aria-describedby={startError ? `${uid}-start-error` : undefined}
               />
+              <p
+                className="rs-format-value"
+                style={FORMAT_HINT_STYLE}
+                data-testid="from-time-value"
+              >
+                {formatTimeValue(values.fromTime)}
+              </p>
               {startError ? (
                 <p className="rs-field-error" id={`${uid}-start-error`} role="alert">
                   <AlertIcon />
@@ -221,6 +290,9 @@ export default function AvailabilityForm({ onSearch, busy = false }: Availabilit
                 aria-invalid={endError ? true : undefined}
                 aria-describedby={endError ? `${uid}-end-error` : undefined}
               />
+              <p className="rs-format-value" style={FORMAT_HINT_STYLE} data-testid="to-date-value">
+                {formatDate(values.toDate)}
+              </p>
             </div>
 
             <div className="rs-field">
@@ -237,6 +309,9 @@ export default function AvailabilityForm({ onSearch, busy = false }: Availabilit
                 aria-invalid={endError ? true : undefined}
                 aria-describedby={endError ? `${uid}-end-error` : undefined}
               />
+              <p className="rs-format-value" style={FORMAT_HINT_STYLE} data-testid="to-time-value">
+                {formatTimeValue(values.toTime)}
+              </p>
               {endError ? (
                 <p className="rs-field-error" id={`${uid}-end-error`} role="alert">
                   <AlertIcon />
@@ -292,6 +367,22 @@ export default function AvailabilityForm({ onSearch, busy = false }: Availabilit
                   )
                 })}
               </div>
+            </div>
+
+            <div className="rs-field rs-field-span-2">
+              <p
+                className="rs-period-summary"
+                style={PERIOD_SUMMARY_STYLE}
+                data-testid="availability-period-summary"
+              >
+                <span>
+                  Von {formatDateWithWeekday(values.fromDate)}, {formatTimeValue(values.fromTime)}
+                </span>
+                <span aria-hidden="true"> – </span>
+                <span>
+                  Bis {formatDateWithWeekday(values.toDate)}, {formatTimeValue(values.toTime)}
+                </span>
+              </p>
             </div>
 
             <div className="rs-field rs-field-submit">

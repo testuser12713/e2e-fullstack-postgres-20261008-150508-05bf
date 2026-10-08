@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { FormEvent, ReactNode } from 'react'
+import type { CSSProperties, FormEvent, ReactNode } from 'react'
 import { ApiError, createBooking, updateBooking } from '../api/client'
 import { formatTimeRange } from './BookingList'
 import type { Booking, Room } from '../types'
@@ -33,6 +33,53 @@ const TITLE_MAX_LENGTH = 80
 
 function pad(value: number): string {
   return value < 10 ? `0${value}` : String(value)
+}
+
+const WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'] as const
+
+/** The product's single DATE format `DD.MM.YYYY` (DESIGN.md layout_principles). */
+function formatDate(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) {
+    return value
+  }
+  return `${match[3]}.${match[2]}.${match[1]}`
+}
+
+/** The product's date-with-weekday format `Mo, 12.05.2025`. */
+function formatDateWithWeekday(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) {
+    return value
+  }
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const weekday = WEEKDAYS[new Date(year, month - 1, day).getDay()]
+  return `${weekday}, ${match[3]}.${match[2]}.${match[1]}`
+}
+
+/** The product's single TIME format 24h `HH:MM`. */
+function formatTimeValue(value: string): string {
+  const match = /^(\d{2}):(\d{2})$/.exec(value)
+  return match ? `${match[1]}:${match[2]}` : value
+}
+
+const FORMAT_HINT_STYLE: CSSProperties = {
+  margin: 0,
+  fontSize: '13px',
+  lineHeight: '20px',
+  color: 'var(--color-fg_muted)',
+  fontVariantNumeric: 'tabular-nums',
+}
+
+const PERIOD_SUMMARY_STYLE: CSSProperties = {
+  margin: 0,
+  fontSize: '14px',
+  lineHeight: '20px',
+  fontWeight: 500,
+  color: 'var(--color-fg)',
+  fontVariantNumeric: 'tabular-nums',
 }
 
 function isValidDay(value: string): boolean {
@@ -405,6 +452,9 @@ export default function BookingForm({
               onBlur={() => blurField('date')}
               {...ariaFor('booking-date', Boolean(dateError))}
             />
+            <p className="format-value" style={FORMAT_HINT_STYLE} data-testid="booking-date-value">
+              {formatDate(values.date)}
+            </p>
           </Field>
 
           <Field id="booking-start" label="Beginn" error={startError}>
@@ -417,6 +467,9 @@ export default function BookingForm({
               onBlur={() => blurField('start')}
               {...ariaFor('booking-start', Boolean(startError))}
             />
+            <p className="format-value" style={FORMAT_HINT_STYLE} data-testid="booking-start-value">
+              {formatTimeValue(values.start)}
+            </p>
           </Field>
 
           <Field id="booking-end" label="Ende" error={endError}>
@@ -429,8 +482,17 @@ export default function BookingForm({
               onBlur={() => blurField('end')}
               {...ariaFor('booking-end', Boolean(endError))}
             />
+            <p className="format-value" style={FORMAT_HINT_STYLE} data-testid="booking-end-value">
+              {formatTimeValue(values.end)}
+            </p>
           </Field>
         </div>
+
+        <p className="period-summary" style={PERIOD_SUMMARY_STYLE} data-testid="booking-period-summary">
+          {formatDateWithWeekday(values.date)}
+          {values.start ? `, ${formatTimeValue(values.start)}` : ''}
+          {values.start && values.end ? ` – ${formatTimeValue(values.end)}` : ''}
+        </p>
 
         <div className="form-actions">
           <button
